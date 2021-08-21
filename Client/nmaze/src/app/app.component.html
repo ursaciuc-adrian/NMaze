@@ -1,0 +1,6 @@
+<div *ngFor="let i of heightArray" class="row">
+  <div class="cell">|</div>
+  <ng-container *ngFor="let j of widthArray">
+    <div class="cell" [ngClass]="getS(i, j)" >{{ getS(i, j) }}</div>
+  </ng-container>
+</div>

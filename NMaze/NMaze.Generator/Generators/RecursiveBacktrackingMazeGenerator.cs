@@ -39,6 +39,7 @@ namespace NMaze.Generator.Generators
 				{
 					grid[cy, cx] |= POINT[direction];
 					grid[ny, nx] |= POINT[OPPOSITE[direction]];
+
 					Generate(grid, nx, ny);
 				}
 			}

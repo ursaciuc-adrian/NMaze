@@ -1,7 +1,10 @@
-﻿using NMaze.Core.Extensions;
+﻿using Akka.Actor;
+using NMaze.Core.Extensions;
+using NMaze.Core.Helpers;
 using NMaze.Generator.Generators;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace NMaze.Cmd
 {
@@ -14,16 +17,16 @@ namespace NMaze.Cmd
 
 		public static void Print(int[,] grid)
 		{
-			for (int i = 0; i < grid.GetLength(0); i++)
-			{
-				for (int j = 0; j < grid.GetLength(1); j++)
-				{
-					Console.Write(grid[i, j] + " ");
-				}
+			//for (int i = 0; i < grid.GetLength(0); i++)
+			//{
+			//	for (int j = 0; j < grid.GetLength(1); j++)
+			//	{
+			//		Console.Write(grid[i, j] + " ");
+			//	}
 
-				Console.WriteLine();
-			}
-			Console.WriteLine();
+			//	Console.WriteLine();
+			//}
+			//Console.WriteLine();
 
 
 			Console.Write(" ");
@@ -58,16 +61,30 @@ namespace NMaze.Cmd
 			
 		}
 
-		static void Main(string[] args)
+		static async Task Main(string[] args)
 		{
+			var stopWatch = new Stopwatch();
+			stopWatch.Start();
+
 			var generator = new RecursiveBacktrackingMazeGenerator();
-			int width = 10;
-			int height = 10;
+			int width = 100;
+			int height = 600;
 
 			int[,] grid = new int[height, width];
-			generator.Generate(grid);
 
-			Print(grid);
+            var system = ActorSystem.Create("MySystem");
+            var generatorActor = system.ActorOf<GeneratorActor>("generatorActor");
+
+            grid = await generatorActor.Ask<int[,]>(new Generate(grid));
+
+
+            stopWatch.Stop();
+			Console.WriteLine("T: " + stopWatch.ElapsedMilliseconds);
+
+            Print(grid);
+
+
+            Console.Read();
 		}
 	}
 }
